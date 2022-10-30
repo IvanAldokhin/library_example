@@ -1,20 +1,16 @@
 package mate.academy;
 
-import mate.academy.dao.LiteraryFormatDao;
-import mate.academy.dao.LiteraryFormatDaoImpl;
-import mate.academy.models.LiteraryFormat;
-import java.util.List;
+
+import mate.academy.models.Book;
+import mate.academy.service.BookService;
+import mate.academy.util.Injector;
 
 public class Main {
+    private static final Injector injector = Injector.getInstance("mate.academy");
     public static void main(String[] args) {
-        LiteraryFormat format = new LiteraryFormat();
-        format.setTitle("ProzZZZ");
-        LiteraryFormatDao literaryFormatDao = new LiteraryFormatDaoImpl();
-        Long a = Long.valueOf(7);
-        literaryFormatDao.delete(a);
-        List<LiteraryFormat> all = literaryFormatDao.getAll();
-        //System.out.println(savedFormat);
-        System.out.println(all);
+        BookService bookService = (BookService) injector.getInstance(BookService.class);
+        Book book = bookService.get(2L);
+        System.out.println(book);
 
     }
 }

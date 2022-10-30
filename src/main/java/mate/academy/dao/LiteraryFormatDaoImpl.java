@@ -1,12 +1,18 @@
 package mate.academy.dao;
 
-import mate.academy.models.LiteraryFormat;
-import mate.academy.util.ConnectionUtil;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import mate.academy.lib.Dao;
+import mate.academy.models.LiteraryFormat;
+import mate.academy.util.ConnectionUtil;
+
+@Dao
 public class LiteraryFormatDaoImpl implements LiteraryFormatDao {
     private static String ALL_FORMATS_REQUIST = "SELECT * FROM literary_formats WHERE is_deleted = false;";
     @Override
