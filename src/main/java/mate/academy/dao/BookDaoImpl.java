@@ -46,7 +46,7 @@ public class BookDaoImpl implements BookDao {
         String selectRequest = "SELECT b.id, title, price, lf.format, lf.id as literary_format_id "
                 + "FROM books b JOIN literary_formats lf "
                 + "ON b.literary_format_id = lf.id "
-                + "WHERE b.id = ?;";
+                + "WHERE b.id = ? AND b.is_deleted = FALSE;";
         Book book = null;
         try  (Connection connection = ConnectionUtil.getConnection();
               PreparedStatement getBookStatement =
@@ -71,7 +71,7 @@ public class BookDaoImpl implements BookDao {
                 = "UPDATE books SET is_deleted = true WHERE id = ?";
         try  (Connection connection = ConnectionUtil.getConnection();
               PreparedStatement deleteBookStatement =
-                      connection.prepareStatement(deleteBookQuery, Statement.RETURN_GENERATED_KEYS)) {
+                      connection.prepareStatement(deleteBookQuery)) {
             deleteBookStatement.setLong(1,BookId);
             return deleteBookStatement.executeUpdate() != 0;
         } catch (SQLException e) {

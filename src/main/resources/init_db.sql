@@ -10,7 +10,7 @@ CREATE TABLE `literary_formats` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE `library_db`.`books` (
+CREATE TABLE `books` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(255) NULL,
   `price` DECIMAL NULL,
