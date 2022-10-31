@@ -23,7 +23,7 @@ public class BookDaoImpl implements BookDao {
                 + "VALUES (?,?,?);";
         try  (Connection connection = ConnectionUtil.getConnection();
               PreparedStatement createBookStatement =
-                      connection.prepareStatement(insertRequest, Statement.RETURN_GENERATED_KEYS);) {
+                      connection.prepareStatement(insertRequest, Statement.RETURN_GENERATED_KEYS)) {
             createBookStatement.setString(1,book.getTitle());
             createBookStatement.setBigDecimal(2,book.getPrice());
             createBookStatement.setLong(3,book.getFormat().getId());
@@ -36,8 +36,10 @@ public class BookDaoImpl implements BookDao {
         } catch (SQLException e) {
             throw new RuntimeException("Can't insert book to DB",e);
         }
+        insertAuthorsToDB(book);
         return book;
     }
+
 
     @Override
     public Book get(Long id) {
@@ -62,6 +64,21 @@ public class BookDaoImpl implements BookDao {
         }
         return book;
     }
+
+    @Override
+    public Boolean delete(Long BookId) {
+        String deleteBookQuery
+                = "UPDATE books SET is_deleted = true WHERE id = ?";
+        try  (Connection connection = ConnectionUtil.getConnection();
+              PreparedStatement deleteBookStatement =
+                      connection.prepareStatement(deleteBookQuery, Statement.RETURN_GENERATED_KEYS)) {
+            deleteBookStatement.setLong(1,BookId);
+            return deleteBookStatement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Can't delete book to DB",e);
+        }
+    }
+
     private Book parseBookwithLiteraryFormatFromResultSet (ResultSet resultSet)
             throws SQLException {
         Book book = new Book();
@@ -85,7 +102,7 @@ public class BookDaoImpl implements BookDao {
         List<Author> authors = new ArrayList<>();
         try  (Connection connection = ConnectionUtil.getConnection();
               PreparedStatement getAllAuthorsStatement = connection
-                      .prepareStatement(getAllAuthorsForBookRequest);) {
+                      .prepareStatement(getAllAuthorsForBookRequest)) {
             getAllAuthorsStatement.setLong(1,bookId);
             ResultSet resultSet = getAllAuthorsStatement
                     .executeQuery();
@@ -104,5 +121,21 @@ public class BookDaoImpl implements BookDao {
         author.setLastName(resultSet.getString("last_name"));
         author.setId(resultSet.getObject("id", Long.class));
         return author;
+    }
+
+    private void insertAuthorsToDB (Book book) {
+        String insertAuthorsRequest = "INSERT INTO books_authors (book_id, author_id) "
+                + "VALUES (?,?);";
+        try  (Connection connection = ConnectionUtil.getConnection();
+              PreparedStatement insertAuthorStatement =
+                      connection.prepareStatement(insertAuthorsRequest)) {
+            insertAuthorStatement.setLong(1,book.getId());
+            for (Author author : book.getAuthor()) {
+                insertAuthorStatement.setLong(2,author.getId());
+                insertAuthorStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Can't insert book to DB",e);
+        }
     }
 }

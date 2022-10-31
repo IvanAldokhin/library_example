@@ -5,4 +5,5 @@ import mate.academy.models.Book;
 public interface BookDao {
     Book create (Book book);
     Book get (Long id);
+    Boolean delete(Long BookId);
 }
